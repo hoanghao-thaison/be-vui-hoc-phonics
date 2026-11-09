@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bé Vui Học Phonics – 200 Level</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF8E7;--ink:#3B2E5A;--line:#eadfc4}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Baloo 2',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;user-select:none;-webkit-user-select:none;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:10px 14px 50px}
+.hidden{display:none!important}
+.btn{border:none;font-family:inherit;cursor:pointer;border-radius:20px;font-weight:800;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.2);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+/* top bar with score (right) */
+.hud{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:8px;padding:8px 0;background:var(--bg)}
+.hud .title{flex:1;font-weight:800;font-size:17px;line-height:1.1;min-width:0}
+.hud .title small{display:block;font-size:12px;font-weight:600;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{margin-left:auto;background:#fff;border-radius:16px;padding:4px 12px;box-shadow:0 3px 0 var(--line);text-align:right;cursor:pointer;line-height:1.15;flex:none}
+.score .nm{font-size:13px;font-weight:700;opacity:.75;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score .pt{font-size:19px;font-weight:800;white-space:nowrap}
+.home{background:#fff;color:var(--ink);font-size:22px;padding:4px 12px;border-radius:14px;box-shadow:0 4px 0 var(--line);flex:none}
+/* profile */
+.prof{text-align:center;padding-top:30px}
+.prof .big{font-size:80px;line-height:1}
+.prof h1{font-size:30px;margin:8px 0 4px}
+.prof input{font-family:inherit;font-size:26px;font-weight:700;text-align:center;padding:10px 14px;border-radius:18px;border:4px solid var(--line);width:100%;max-width:360px;color:var(--ink);outline:none;background:#fff}
+.prof input:focus{border-color:#FFD43B}
+.prof .go{display:block;margin:14px auto;font-size:24px;padding:12px 34px;background:linear-gradient(135deg,#FF6B6B,#FF9F43)}
+.kids{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
+.kid{background:#fff;color:var(--ink);font-size:18px;padding:8px 16px;box-shadow:0 4px 0 var(--line)}
+.kid small{display:block;font-size:13px;font-weight:600;opacity:.7}
+.prof .err{color:#e03131;font-weight:700;min-height:24px}
+/* map */
+.cont{width:100%;background:linear-gradient(135deg,#FF6B6B,#FF9F43);font-size:24px;padding:14px;border-radius:24px;margin:4px 0 12px}
+.cont small{display:block;font-size:15px;font-weight:600}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{flex:1;background:#fff;color:var(--ink);font-size:13px;padding:6px 2px;box-shadow:0 4px 0 var(--line);line-height:1.15;min-width:0}
+.tab span{display:block;font-size:22px}
+.tab.on{background:var(--ink);color:#fff}
+/* ôn từ khó */
+.revbtn{width:100%;background:linear-gradient(135deg,#7048E8,#B45BE0);font-size:20px;padding:10px;border-radius:20px;margin:0 0 12px}
+.revbtn small{display:block;font-size:14px;font-weight:600}
+/* cửa hàng */
+.shophd{background:#fff;border-radius:20px;padding:12px;text-align:center;box-shadow:0 4px 0 var(--line);margin-bottom:12px}
+.shophd .cn{font-size:30px;font-weight:800}
+.shophd .av{font-size:56px;line-height:1}
+.stks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stk{background:#fff;color:var(--ink);padding:8px 2px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;font-size:13px;line-height:1.15;border:3px solid transparent}
+.stk b{font-size:40px;line-height:1.1}
+.stk.no b{filter:grayscale(1) opacity(.45)}
+.stk.own{background:#E6FCEF}
+.stk.sel{border-color:#FFD43B}
+/* báo cáo */
+.rp{background:#fff;border-radius:20px;padding:12px 14px;margin-bottom:12px;box-shadow:0 4px 0 var(--line)}
+.rp h3{margin:0 0 8px;font-size:17px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--bg);border-radius:14px;padding:8px;text-align:center;font-size:13px;font-weight:600}
+.stat b{display:block;font-size:24px}
+.rp table{width:100%;border-collapse:collapse;font-size:15px}
+.rp td,.rp th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:center}
+.rp th{font-size:13px;opacity:.7}
+.rp td:first-child,.rp th:first-child{text-align:left}
+.wrongs{display:flex;flex-wrap:wrap;gap:8px}
+.wr{background:#FFF0F0;color:var(--ink);font-size:16px;padding:6px 12px;box-shadow:0 3px 0 #ffd0d0}
+.wr small{font-size:12px;opacity:.7}
+.saybtns .btn.mic{background:#FF6B6B;color:#fff;font-size:22px;padding:12px 22px}
+.saybtns .btn.mic.on{animation:pulse 1s infinite;background:#2FBF71}
+.sec{background:#fff;border-radius:22px;padding:12px 12px 14px;margin-bottom:14px;box-shadow:0 4px 0 var(--line)}
+.sec h3{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec h3 .tag{font-size:12px;font-weight:700;background:var(--ink);color:#fff;border-radius:99px;padding:1px 9px}
+.sec h3 .prog2{margin-left:auto;font-size:14px;opacity:.7}
+.sec .wl{font-size:13px;opacity:.7;margin-bottom:8px;line-height:1.3}
+.lvgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 4px}
+.lv{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.lv .c{width:50px;height:50px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:17px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.lv .c i{font-style:normal;font-size:14px}
+.lv .s{font-size:10px;height:13px;letter-spacing:-1px}
+.lv.lock .c{background:#d9d0bd!important;color:#9b8f76}
+.lv.cur .c{animation:pulse 1.2s infinite;outline:4px solid #FFD43B;outline-offset:2px}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.parent{margin-top:18px;background:#fff;border-radius:18px;padding:12px 14px;font-size:15px;box-shadow:0 4px 0 var(--line)}
+.parent label{display:flex;gap:8px;align-items:center;font-weight:700}
+.parent input{width:22px;height:22px}
+.parent .rs{margin-top:10px;background:#aaa;font-size:14px;padding:6px 14px}
+.note{font-size:14px;opacity:.75;line-height:1.4;margin-top:8px}
+h2{margin:14px 0 8px;font-size:18px}
+.units{display:flex;flex-wrap:wrap;gap:8px}
+.unit{padding:4px 12px;font-size:16px;opacity:.5}
+.unit.on{opacity:1;outline:4px solid var(--ink);outline-offset:2px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{padding:12px 8px;font-size:18px;display:flex;flex-direction:column;align-items:center;min-height:110px;justify-content:center;text-align:center}
+.mode .ic{font-size:42px;line-height:1.1}
+.mode .vi{font-size:13px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#FFE3E3;color:#C92A2A;text-decoration:none;border-radius:99px;padding:3px 10px;font-weight:800;font-size:13px}
+.chip.st{background:#E7F5FF;color:#1864AB}.chip.sg{background:#FFF3BF;color:#E67700}
+.lvbook{font-size:12px;font-weight:700;opacity:.65;margin:4px 0 2px}
+.vgroup{background:#fff;border-radius:18px;padding:10px 12px;margin-bottom:10px;box-shadow:0 4px 0 var(--line)}
+.vgroup h3{margin:0 0 6px;font-size:16px}
+.vidbtn{background:#FF6B6B;color:#fff;text-decoration:none;font-size:15px;padding:6px 10px;border-radius:14px;font-weight:800;box-shadow:0 4px 0 rgba(0,0,0,.2);flex:none}
+.lib{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.book{background:#fff;color:var(--ink);padding:12px 8px;text-align:center;box-shadow:0 5px 0 var(--line);font-size:16px}
+.book b{display:block;font-size:40px}
+.book small{display:block;font-size:12px;font-weight:600;opacity:.7}
+.page{font-size:14px;font-weight:700;opacity:.6}
+.vids{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.vid{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FF6B6B;color:#fff;text-decoration:none;border-radius:16px;padding:10px 4px;font-weight:800;font-size:16px;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.vid b{font-size:26px}
+/* game */
+.prog{height:14px;background:var(--line);border-radius:99px;overflow:hidden;margin:2px 0 8px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFD43B,#FF9F43);transition:width .3s}
+.prompt{background:#fff;border-radius:26px;padding:16px;text-align:center;box-shadow:0 5px 0 var(--line);margin-bottom:16px;min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.hint{font-size:17px;font-weight:600;opacity:.7}
+.speak{background:#FFD43B;color:var(--ink);font-size:52px;width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.speak.sm{font-size:26px;width:56px;height:56px}
+.bigemoji{font-size:92px;line-height:1.1}
+.word{display:flex;gap:4px;justify-content:center;font-size:54px;font-weight:800;letter-spacing:2px}
+.word .blank{min-width:50px;border-bottom:6px solid var(--ink);color:#339AF0;padding:0 4px}
+.sentence{font-size:31px;font-weight:700;line-height:1.4}
+.sentence .blank{display:inline-block;min-width:90px;border-bottom:5px solid var(--ink);color:#2FBF71;text-align:center}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.opts.c3{grid-template-columns:1fr 1fr 1fr}
+.opts.c5{grid-template-columns:repeat(5,1fr);gap:8px}
+.opt{background:#fff;color:var(--ink);font-size:70px;min-height:126px;box-shadow:0 6px 0 var(--line);border:4px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.opt .lbl{font-size:21px;font-weight:800;height:26px}
+.opt.txt{font-size:34px;min-height:94px}
+.opt.vow{font-size:42px;min-height:88px;color:#fff}
+.opt.right{border-color:#2FBF71;background:#E6FCEF}
+.opt.vow.right{border-color:#fff;filter:brightness(1.1)}
+.opt.wrong{opacity:.35;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.sayword{font-size:62px;font-weight:800;letter-spacing:3px;line-height:1}
+.sayword b{color:#FF6B6B}
+.saybtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.saybtns .btn{background:#FFD43B;color:var(--ink);font-size:19px;padding:10px 18px}
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.judge .btn{font-size:23px;padding:18px 8px;line-height:1.2}
+.judge .ok{background:#2FBF71}.judge .re{background:#FF9F43}
+.judge small{display:block;font-size:14px;font-weight:600}
+.slots{display:flex;gap:6px;justify-content:center}
+.slot{width:48px;height:58px;border-bottom:6px solid var(--ink);font-size:44px;font-weight:800;display:flex;align-items:flex-end;justify-content:center;color:#339AF0}
+.tiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tile{width:66px;height:72px;font-size:40px;background:#B45BE0}
+.tile.used{visibility:hidden}
+.tile.wrong{animation:shake .4s;background:#e03131}
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.6);background:#fff;padding:14px 26px;border-radius:24px;font-size:32px;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:all .25s;z-index:40;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.fx{position:fixed;font-size:34px;pointer-events:none;z-index:30;animation:fly 1.1s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(360deg);opacity:0}}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{aspect-ratio:3/4;perspective:600px;cursor:pointer}
+.card .in{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
+.card.flip .in,.card.done .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:16px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.card .f{background:linear-gradient(135deg,#339AF0,#B45BE0);color:#fff;font-size:38px}
+.card .b{background:#fff;transform:rotateY(180deg);font-size:44px;font-weight:800}
+.card .b.t{font-size:24px}
+.card.done .b{background:#E6FCEF;outline:3px solid #2FBF71}
+.grid.g16 .card{aspect-ratio:1/1}
+.grid.g16 .card .b{font-size:36px}.grid.g16 .card .b.t{font-size:19px}
+.moves{text-align:center;font-weight:700;margin:4px 0 12px;font-size:17px}
+.result{text-align:center;padding-top:20px}
+.result .big{font-size:104px;line-height:1}
+.result h1{font-size:38px;margin:6px 0}
+.result .st{font-size:44px;letter-spacing:4px;margin:8px 0 4px}
+.result .sub{font-size:19px;font-weight:600}
+.result .gain{font-size:24px;font-weight:800;color:#E8590C;margin-top:6px}
+.result .badge{margin:12px auto;background:#fff;border-radius:20px;padding:10px 16px;max-width:420px;font-weight:800;font-size:19px;box-shadow:0 4px 0 var(--line)}
+.result .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.result .btn{font-size:21px;padding:12px 20px}
+@media (max-width:420px){
+ .opt{font-size:56px;min-height:108px}.opt.txt{font-size:26px}.word{font-size:42px}.sentence{font-size:24px}.bigemoji{font-size:76px}.sayword{font-size:48px}
+ .card .b{font-size:32px}.card .b.t{font-size:17px}.grid{gap:7px}.opt.vow{font-size:30px;min-height:74px}
+ .grid.g16 .card .b{font-size:28px}.grid.g16 .card .b.t{font-size:14px}
+ .lv .c{width:44px;height:44px;font-size:15px}.lvgrid{grid-template-columns:repeat(5,1fr)}
+ .slot{width:38px;font-size:36px}.tile{width:54px;height:62px;font-size:32px}
+ .hud .title{font-size:15px}.score .pt{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hud">
+ <button class="btn home hidden" id="homeBtn">🗺️</button>
+ <div class="title" id="hudTitle">🌟 Bé Vui Học Phonics<small>Oxford Phonics World 2 · 3 · Sight Word Trees · Readers</small></div>
+ <a class="vidbtn hidden" id="vidBtn" target="_blank" rel="noopener">📺 Video</a>
+ <div class="score hidden" id="score" title="Đổi bé"><div class="nm" id="sName"></div><div class="pt">⭐ <span id="sStars">0</span> · 🏆 <span id="sPts">0</span></div></div>
+</div>
+
+<!-- PROFILE -->
+<section id="profile" class="prof">
+ <div class="big">🧒👧</div>
+ <h1>Bé tên là gì nhỉ?</h1>
+ <input id="nameIn" maxlength="20" placeholder="Nhập tên bé" autocomplete="off">
+ <div class="err" id="nameErr"></div>
+ <button class="btn go" id="goBtn">▶️ Bắt đầu học</button>
+ <div id="kidsBox" class="hidden"><h2>Hoặc chọn bé đã chơi trên máy này</h2><div class="kids" id="kids"></div></div>
+ <p class="note">Mỗi bé có tên riêng, điểm và level riêng, không ảnh hưởng nhau.</p>
+</section>
+
+<!-- HOME -->
+<section id="home" class="hidden">
+ <button class="btn cont" id="contBtn"></button>
+ <div class="tabs">
+  <button class="btn tab on" data-t="map"><span>🗺️</span>Hành trình</button>
+  <button class="btn tab" data-t="free"><span>🎮</span>Tự do</button>
+  <button class="btn tab" data-t="vid"><span>📺</span>Video</button>
+  <button class="btn tab" data-t="shop"><span>🎁</span>Đổi quà</button>
+  <button class="btn tab" data-t="rep"><span>📊</span>Bố mẹ</button>
+ </div>
+ <button class="btn revbtn hidden" id="revBtn"></button>
+ <div id="t-map"></div>
+ <div id="t-shop" class="hidden"></div>
+ <div id="t-rep" class="hidden"></div>
+ <div id="t-free" class="hidden">
+  <h2>1. Chọn bài</h2><div class="units" id="units"></div>
+  <h2>2. Chọn trò chơi</h2><div class="modes" id="modes"></div>
+  <h2>📚 Truyện đọc (Readers)</h2><div class="lib" id="lib"></div>
+  <p class="note">Chơi tự do vẫn được cộng điểm 🏆 nhưng không mở level.</p>
+ </div>
+ <div id="t-vid" class="hidden">
+  <p class="note" style="margin-top:0">Video bài học của sách, xếp theo Unit. Bấm để mở trên YouTube, xem xong quay lại game chơi tiếp.</p>
+  <div id="vids"></div>
+ </div>
+ <div class="parent">
+  <label><input type="checkbox" id="unlockAll"> 🔓 Bố mẹ: mở khoá tất cả level</label>
+  <div class="note">Mỗi level 1 trò. Đạt từ 1⭐ là mở level kế tiếp. Điểm 🏆 cộng dồn mỗi lần chơi: đúng ngay +10, đúng lần sau +5, hoàn thành level +10 mỗi sao. Điểm 🏆 dùng để đổi sticker ở mục 🎁 Đổi quà. Trò 🗣️: bé bấm 🎤 để máy tự nghe chấm (nếu máy cho dùng micro), hoặc bố mẹ ngồi cạnh bấm 👍 / 🔁.</div>
+  <button class="btn rs" id="switchBtn" style="background:#339AF0">👥 Đổi bé khác</button>
+  <button class="btn rs" id="resetBtn">Xoá tiến độ của bé này</button>
+ </div>
+</section>
+
+<!-- QUIZ -->
+<section id="game" class="hidden">
+ <div class="prog"><i id="bar"></i></div>
+ <div class="prompt" id="prompt"></div>
+ <div class="opts" id="opts"></div>
+</section>
+
+<!-- MEMORY -->
+<section id="mem" class="hidden">
+ <div class="moves" id="moves">Số lần lật: 0</div>
+ <div class="grid" id="grid"></div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="hidden">
+ <div class="result">
+  <div class="big" id="rEmoji">🏆</div>
+  <h1 id="rTitle">Great job!</h1>
+  <div class="st" id="rStars"></div>
+  <div class="sub" id="rSub"></div>
+  <div class="gain" id="rGain"></div>
+  <div class="badge hidden" id="rBadge"></div>
+  <div class="row" id="rBtns"></div>
+ </div>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   NỘI DUNG — bám Oxford Phonics World 2 & 3 (Student Book + video),
+   vở Writing English 2 & 3, Sight Word Trees, Readers Level 2 & 3
+   ===================================================================== */
+const PL2='PL9CB949BhBAjbyCiR0zPEOpMS-nHsDcZA', PL3='PL9CB949BhBAiUFzoFb17CQY2nKH_J_YaG';
+const yt=(id,pl)=>'https://www.youtube.com/watch?v='+id+'&list='+pl;
+// Mỗi Unit: các bài nhỏ theo đúng video (âm · video · từ), video story
+const BOOK2=[
+ {u:1,col:'#FF6B6B',title:'Short a',lessons:[
+   ['a','0bvAWePdvTY','ant:🐜,apple:🍎,cat:🐱,alligator:🐊'],
+   ['am','hAsPaDg8sek','yam:🍠,ham:🍖,jam:🍯'],
+   ['an','f0cPndkcakk','man:🧔,pan:🍳,can:🥫,fan:🪭,van:🚐']],story:'Q29Fsj6v7fs'},
+ {u:2,col:'#F76707',title:'Short a',lessons:[
+   ['ad · ag','qk9NGnu-P9s','dad:👨,sad:😢,mad:😠,bag:👜,tag:🏷️,wag:🐕'],
+   ['ap','pPmaVdLhNMQ','cap:🧢,map:🗺️,nap:😴,tap:🚰'],
+   ['at','Fw1T3lL0Gjk','mat:🧘,hat:👒,bat:🦇,rat:🐀']],story:'R1taNgSzsl0'},
+ {u:3,col:'#FAB005',title:'Short e',lessons:[
+   ['e','1dZIlPk8Ha8','web:🕸️,egg:🥚,bell:🔔,elf:🧝'],
+   ['et','0aeyFqYg-Wc','jet:🛩️,net:🥅,wet:💦,vet:🩺'],
+   ['en · ed','kD1iru52a9I','pen:🖊️,hen:🐔,ten:🔟,bed:🛏️,red:🔴']],story:'BF8ac-PFUpc'},
+ {u:4,col:'#2FBF71',title:'Short i',lessons:[
+   ['i','8NCosjP_KWA','hip:🕺,ink:🖋️,insect:🦗,fish:🐟'],
+   ['ip','WFeuD_6xIK4','lip:👄,sip:🧃,dip:🫕,zip:🤐'],
+   ['ib · id','Zrgidh5TlzY','kid:🧒,lid:🫙,bib:👶,rib:🍗']],story:'tGPEJtZVNN8'},
+ {u:5,col:'#0CA678',title:'Short i',lessons:[
+   ['in','cbyQFne8FDs','pin:📌,win:🏆,fin:🦈,bin:🗑️'],
+   ['ig','3IpXez9LgDo','wig:💇,pig:🐷,dig:⛏️,big:🐘'],
+   ['it · ix','-FjSbtcnd4E','pit:🕳️,sit:🪑,hit:🏏,six:6️⃣,mix:🥣,fix:🔧']],story:'hwk55vPXvsE'},
+ {u:6,col:'#339AF0',title:'Short o',lessons:[
+   ['o','h8dnyCZwL4c','fox:🦊,log:🪵,ox:🐂,dog:🐕'],
+   ['ot','b2KWTOAGi64','pot:🍲,hot:🔥,dot:⚫'],
+   ['op','68DqTNSq87M','pop:🎈,hop:🐇,mop:🧹,top:🔝']],story:'_KpMubDORH4'},
+ {u:7,col:'#7048E8',title:'Short u',lessons:[
+   ['u','DvTwViyfLU0','sun:☀️,jug:🫗,bus:🚌,up:⬆️'],
+   ['ug','l6V18XHb_vU','mug:☕,bug:🐛,hug:🤗'],
+   ['ud · up','qpp6BxXi41c','mud:🟤,bud:🌱,cup:🥤,pup:🐶']],story:'B1MZA548gYo'},
+ {u:8,col:'#B45BE0',title:'Short u',lessons:[
+   ['ut','cCg8QzM3eRw','cut:✂️,hut:🛖,nut:🥜'],
+   ['ub · um','5_2NLf2YWNs','cub:🐻,tub:🛁,rub:🧴,gum:🍬,drum:🥁,plum:🍑'],
+   ['un','Fd1mwJGDRTw','fun:🎉,bun:🍞,run:🏃,sun:🌞']],story:'ls7Un7ZQ_5w'}
+];
+const REV2=[{r:1,units:[1,2],song:'RaEjNh87Ay8',title:'Short a'},{r:2,units:[3,4],song:'QHK3ceMfoI0',title:'Short e · Short i',reader:'nojam'},
+ {r:3,units:[5,6],song:'2_hDGDJSd_4',title:'Short i · Short o',reader:'farm'},{r:4,units:[7,8],song:'B6XAwvG0m7s',title:'Short u',reader:'mud'}];
+const BOOK3=[
+ {u:1,col:'#E8590C',title:'Long a',lessons:[
+   ['a_e','mrnHmz5o8oY','tape:🩹,cape:🦸,cane:🦯,mane:🐴'],
+   ['ame · ake','0_c_Wh72jmQ','game:🎲,name:📛,cake:🎂,lake:🏞️'],
+   ['ate · ave','vYNzo1zRAVA','gate:🚪,skate:⛸️,wave:🌊,cave:🕳️']],story:'kjwnF8XZoWQ'},
+ {u:2,col:'#2B8A3E',title:'Long i',lessons:[
+   ['i_e','2oHZMXkqt5U','kite:🪁,pine:🌲,ripe:🍌,fine:🙂'],
+   ['ime · ike','GrmRhU3GPKo','time:⏰,lime:🍋‍🟩,bike:🚲,hike:🥾'],
+   ['ive · ine','fDTkcGxKQNc','five:5️⃣,dive:🤿,nine:9️⃣']],story:'uNeO6Zy8m9w'},
+ {u:3,col:'#1971C2',title:'Long o · Long u',lessons:[
+   ['o_e','jvO1pKinBQQ','home:🏠,bone:🦴,cone:🍦,rope:🪢'],
+   ['u_e (cute)','p7SP-Vpb88o','cute:🥰,cube:🧊,mule:🫏,mute:🔇'],
+   ['u_e (tune)','-psPwfdnhSg','tune:🎶,June:🗓️,tube:🧪,rule:📏']],story:'EPNZu_5sozc'},
+ {u:4,col:'#F76707',title:'Long a',lessons:[
+   ['ai','YSbx83ZFkkE','wait:⏳,tail:🦘,rain:🌧️,nail:💅,sail:⛵,mail:📬'],
+   ['ay','yAzu3MVun40','day:🌞,bay:🏝️,hay:🌾,May:🌸,say:💬,pay:💵']],story:'QCbOkA5mj_o'},
+ {u:5,col:'#37B24D',title:'Long e',lessons:[
+   ['ee','MoDbInJUC58','bee:🐝,jeep:🚙,feet:🦶,seed:🌱'],
+   ['ea','gc_xMW28aH4','leaf:🍃,sea:🐠,eat:🍽️,meat:🥩'],
+   ['y · ey','lTy9jNa8qiU','money:💰,key:🔑,candy:🍬,happy:😄']],story:'G8KdKVJXmTQ'},
+ {u:6,col:'#4263EB',title:'Long i',lessons:[
+   ['igh','pDXddePXZA4','light:💡,night:🌃,high:⬆️,right:👉'],
+   ['ie','Ef5p7YU23fY','lie:🤥,tie:👔,pie:🥧'],
+   ['y','srVdsGeioKI','spy:🕵️,sky:🌌,cry:😭,my:🙋,fly:🪰']],story:'I5UgKGuWyOE'},
+ {u:7,col:'#AE3EC9',title:'Long o',lessons:[
+   ['oa','kEWvueQ_-_4','road:🛣️,coat:🧥,boat:🚤,soap:🧼,goat:🐐,toad:🐸'],
+   ['ow','1Z_cYVW1z2g','row:🚣,yellow:💛,bow:🎀,pillow:🛌,elbow:💪,window:🪟']],story:'dZ_Mb11GvNk'},
+ {u:8,col:'#C2255C',title:'Long u',lessons:[
+   ['ue','f98s0bY1pfc','blue:🔵,clue:🔍,glue:🧴,Tuesday:📅'],
+   ['ui · ew','FXmALsU40ao','fruit:🍎,suit:🤵,new:🆕,dew:💧'],
+   ['oo','qF5rM9Ae5IM','food:🍱,boot:👢,moon:🌙,zoo:🦁']],story:'tyzbWzzHts8'}
+];
+const REV3=[{r:1,units:[1,2],song:'5dC3w4WPHHc',title:'Long a · Long i'},{r:2,units:[3,4],song:'PAG2zBiKuNQ',title:'Long o · u · a',reader:'bay'},
+ {r:3,units:[5,6],song:'mfFAvvY5Cis',title:'Long e · Long i',reader:'spy'},{r:4,units:[7,8],song:'3dSp0MhOGX0',title:'Long o · Long u',reader:'mom'}];
+const INTRO2='SiDiyEhobBk',INTRO3='9n9xsRJTlTc';
+const VTITLE2=['Intro · ABC Song'],VTITLE3=['Intro'];
+
+/* Câu đọc theo Unit (luyện như phần Story của sách — câu do game soạn, dùng đúng từ của bài) */
+const STORY={
+ '2-1':[["I see an ___.","🐜","ant"],["The ___ is fat.","🐱","cat"],["I like ___.","🍯","jam"],["The ___ has a pan.","🧔","man"],["A ___ is in the van.","🪭","fan"],["Dad has a ___.","🍳","pan"]],
+ '2-2':[["___ has a bag.","👨","Dad"],["The cat is on the ___.","🧘","mat"],["I have a ___.","🧢","cap"],["Look at the ___!","🗺️","map"],["The dog can ___.","🐕","wag"],["The ___ is sad.","🦇","bat"]],
+ '2-3':[["The ___ has an egg.","🐔","hen"],["I have ___ pens.","🔟","ten"],["The ___ is in the sky.","🛩️","jet"],["The dog is ___.","💦","wet"],["I go to ___.","🛏️","bed"],["I see a ___.","🕸️","web"]],
+ '2-4':[["The ___ can run.","🧒","kid"],["The baby has a ___.","👶","bib"],["The ___ is on the pot.","🫙","lid"],["I ___ my juice.","🧃","sip"],["Zip! ___ it up!","🤐","Zip"],["Lick your ___!","👄","lip"]],
+ '2-5':[["The ___ is pink.","🐷","pig"],["I can ___ in the mud.","⛏️","dig"],["I have ___ pens.","6️⃣","six"],["We ___!","🏆","win"],["The cat can ___.","🪑","sit"],["Dad can ___ it.","🔧","fix"]],
+ '2-6':[["The ___ is in the box.","🦊","fox"],["The pot is ___.","🔥","hot"],["A rabbit can ___.","🐇","hop"],["Mom has a ___.","🧹","mop"],["The ___ is on the log.","🐕","dog"],["The balloon can ___!","🎈","pop"]],
+ '2-7':[["The ___ is hot.","☀️","sun"],["Give me a ___!","🤗","hug"],["The ___ is on the rug.","🐛","bug"],["The pig is in the ___.","🟤","mud"],["I have a red ___.","🥤","cup"],["The ___ is cute.","🐶","pup"]],
+ '2-8':[["It is ___!","🎉","fun"],["I eat a ___.","🍞","bun"],["The ___ is with its mom.","🐻","cub"],["The duck is in the ___.","🛁","tub"],["I can ___ fast.","🏃","run"],["I ___ the paper.","✂️","cut"]],
+ '3-1':[["We eat ___.","🎂","cake"],["What is your ___?","📛","name"],["Let's play a ___.","🎲","game"],["Look at the big ___!","🌊","wave"],["We go in a ___.","🕳️","cave"],["Close the ___.","🚪","gate"]],
+ '3-2':[["I ride my ___.","🚲","bike"],["Fly the ___!","🪁","kite"],["I can ___ in the pool.","🤿","dive"],["I see ___ fish.","5️⃣","five"],["What ___ is it?","⏰","time"],["The banana is ___.","🍌","ripe"]],
+ '3-3':[["The dog has a ___.","🦴","bone"],["I go ___.","🏠","home"],["It is ___.","🗓️","June"],["The cat is ___.","🥰","cute"],["I like the ___.","🎶","tune"],["I eat an ice cream ___.","🍦","cone"]],
+ '3-4':[["We swim in the ___.","🏝️","bay"],["The kangaroo has a long ___.","🦘","tail"],["___ for me!","⏳","Wait"],["Get the ___!","📬","mail"],["I see the ___.","🌧️","rain"],["It is a sunny ___.","🌞","day"]],
+ '3-5':[["The ___ makes honey.","🐝","bee"],["We ride in a ___.","🚙","jeep"],["I ___ toast.","🍽️","eat"],["Fish swim in the ___.","🐠","sea"],["I am ___!","😄","happy"],["I have a ___.","🔑","key"]],
+ '3-6':[["The moon is in the ___.","🌌","sky"],["It is ___.","🌃","night"],["Turn on the ___.","💡","light"],["I eat ___.","🥧","pie"],["I am a ___!","🕵️","spy"],["Dad has a ___.","👔","tie"]],
+ '3-7':[["I see a ___ on the road.","🐸","toad"],["The ___ is on the sea.","🚤","boat"],["The sun is ___.","💛","yellow"],["Look out the ___.","🪟","window"],["The ___ eats grass.","🐐","goat"],["I put on my ___.","🧥","coat"]],
+ '3-8':[["The ___ is high.","🌙","moon"],["We go to the ___.","🦁","zoo"],["The sky is ___.","🔵","blue"],["I eat ___.","🍎","fruit"],["I have a ___ toy.","🆕","new"],["I like this ___.","🍱","food"]]
+};
+
+/* Truyện đọc Readers — kể lại ngắn gọn, dùng đúng nhân vật và từ vựng của từng cuốn */
+const READERS={
+ nojam:{t:'No Jam!',lv:2,e:'🍯',words:'jam,jet,red,dip,sip,nap,bag,can,get,in',pages:[
+  ["Sid and Dan want ___.","🍯","jam"],["Oh, no! There is no ___!","🫙","jam"],["Dan says, \"I ___ get jam!\"","🙋","can"],["Dan gets in his red ___.","🛩️","jet"],["The jet goes up. Then it can ___.","🛩️","dip"],["Dan gets a ___ of jam.","👜","bag"],["Sid can ___ the jam drink.","🧃","sip"],["Then Dan takes a ___.","😴","nap"]]},
+ farm:{t:'At the Farm',lv:2,e:'🚜',words:'hens,ten,eggs,pig,mud,hat,big,red,farm,fun',pages:[
+  ["The kids are at a ___.","🚜","farm"],["Jan likes the ___.","🐔","hens"],["There are ___ eggs!","🔟","ten"],["Bud sees a big ___.","🐷","pig"],["The pig is in the ___.","🟤","mud"],["Bud has a red ___.","👒","hat"],["The farm is ___!","🎉","fun"]]},
+ mud:{t:'Fun in the Mud',lv:2,e:'🟤',words:'mud,tug,dig,figs,buns,yum,fun,help,Kit,Dad',pages:[
+  ["The kids ___ in the mud.","🪢","tug"],["Dad is stuck in the ___!","🟤","mud"],["Kit says, \"Dad needs ___!\"","🆘","help"],["We can ___!","⛏️","dig"],["Look! ___! Yum!","😋","Figs"],["And ___! Yum!","🍞","buns"],["It is ___ in the mud!","🎉","fun"],
+  ["who","\"Dad needs help! We can dig.\"","Kit",["Kit","Dad","Mom"]],["who","\"Help! I am stuck in the mud!\"","Dad",["Dad","Kit","Mom"]]]},
+ bay:{t:'At the Bay',lv:3,e:'🏝️',words:'June,bay,dive,five,cute,cave,nine,bones,tail,home,late,game',pages:[
+  ["It is ___.","🗓️","June"],["We walk to the ___ to swim.","🏝️","bay"],["I ___ into the water.","🤿","dive"],["I see ___ cute fish.","5️⃣","five"],["The fish are so ___!","🥰","cute"],["We go to a ___.","🕳️","cave"],["We see ___ bones!","9️⃣","nine"],["Look! A fin and a ___!","🦈","tail"],["It is ___. We go home.","🌇","late"]]},
+ spy:{t:'I Am a Spy!',lv:3,e:'🕵️',words:'spy,cape,tape,Mike,clues,kite,pine,bike,blue,coat,home,new',pages:[
+  ["I am a ___!","🕵️","spy"],["I have a blue ___.","🦸","cape"],["My friend is ___.","👦","Mike"],["We look for ___.","🔍","clues"],["I see a ___ in the pine tree.","🪁","kite"],["Mike has a ___ coat.","🆕","new"],["We ride a ___ home.","🚲","bike"]]},
+ mom:{t:'A Day with Mom',lv:3,e:'👩',words:'jeep,blue,bee,leaf,toast,noon,toad,boat,zoo,moon,high,sky,night',pages:[
+  ["We ride in our blue ___.","🚙","jeep"],["I see a ___ on a leaf.","🐝","bee"],["We eat ___ and honey.","🍞","toast"],["It is ___. Time to eat!","🕛","noon"],["A ___ is on the road.","🐸","toad"],["We see a ___ on the sea.","🚤","boat"],["We go to the ___.","🦁","zoo"],["At night, the ___ is high in the sky.","🌙","moon"]]}
+};
+/* Sight Word Trees — theo thứ tự trong sách */
+const SIGHT=[["___ cat is big.","🐱","The"],["I go ___ school.","🏫","to"],["Mom ___ Dad.","👩👨","and"],["___ is my dad.","👨","He"],["I see ___ dog.","🐶","a"],["___ can jump.","🐸","I"],["Can ___ see me?","👀","you"],["___ is a box.","📦","It"],["A cup ___ milk.","🥛","of"],["The fish is ___ the tub.","🐟","in"],["The cat ___ sad.","😿","was"],["\"Hi!\" ___ Mom.","👩","said"],["Dan has ___ hat.","👒","his"],["Look at ___ bus!","🚌","that"],["___ is my mom.","👩","She"],["This is ___ you.","🎁","for"],["The cat is ___ the bed.","🛏️","on"],["___ like to play.","👫","They"],["I like it, ___ not that.","🤔","but"],["I ___ a nap.","😴","had"],["Look ___ me!","🙋","at"],["I like ___.","👦","him"],["I play ___ my dog.","🐕","with"],["We ___ like cake.","🎂","all"],["Look ___!","⬆️","up"],["The sky ___ blue.","🔵","is"],["___ at the bird!","🐦","Look"],["The cat is over ___.","👉","there"],["I like ___ hat.","👧","her"],["Can I have ___ cake?","🍰","some"],["Let's go ___!","🚪","out"],["I want to ___ a cat.","🐱","be"],["It is as big ___ a bus.","🚌","as"],["Let's ___ home.","🏠","go"],["I ___ a pet.","🐹","have"],["___ like to swim.","🏊","We"],["I ___ six.","6️⃣","am"],["I eat, ___ I sleep.","😴","then"],["It is a ___ bug.","🐞","little"],["Sit ___, please.","⬇️","down"],["I ___ my homework.","📝","do"],["I ___ bark.","🐶","can"],["I ___ not see.","🙈","could"],["___ can we play?","⏰","When"],["I ___ it!","✅","did"],["___ is this?","❓","What"],["I am ___ happy!","😄","so"],["I ___ a bird.","🐦","see"],["I can ___ fly.","🚫","not"],["We ___ at the zoo.","🦁","were"],["Can you ___ the ball?","⚽","get"],["I like ___ all.","🐶🐱","them"],["I ___ red.","🔴","like"],["I have ___ hat.","1️⃣","one"],["___ is my cat.","🐈","This"]];
+const SW=s=>s[2]==='I'?'I':s[2].toLowerCase();
+
+/* ============ DỰNG DỮ LIỆU ============ */
+const ALLTEAMS=['ai','ay','ee','ea','ey','igh','ie','oa','ow','ue','ui','ew','oo'];
+const UNITS=[];
+function mkUnit(book,d){
+ const u={book,u:d.u,id:book+'-'+d.u,col:d.col,title:d.title,story:d.story,pl:book===2?PL2:PL3,lessons:[]};
+ u.name='Unit '+d.u+' · '+d.lessons.map(l=>l[0]).join(' · ');
+ d.lessons.forEach(l=>{const les={name:l[0],video:l[1],unit:u};les.teams=l[0].split(/[ ·()]+/).filter(x=>/^[a-z]+$/.test(x)&&ALLTEAMS.includes(x));
+  les.words=l[2].split(',').map(s=>{const k=s.indexOf(':');const o={w:s.slice(0,k),e:s.slice(k+1),u,les};return o;});u.lessons.push(les);});
+ u.kind=book===2?'v':(u.lessons.some(l=>l.teams.length)?'t':'e');
+ u.teams=[...new Set(u.lessons.flatMap(l=>l.teams))];if(d.u===5&&book===3)u.teams.push('y');if(d.u===6&&book===3)u.teams.push('y');
+ u.words=u.lessons.flatMap(l=>l.words);u.words.forEach(o=>o.t=target(o.w,u));
+ u.i=UNITS.length;UNITS.push(u);return u;
+}
+function target(w,u){
+ const lw=w.toLowerCase();
+ if(u.kind!=='t'){for(let i=0;i<lw.length;i++)if('aeiou'.includes(lw[i]))return [i,1];return [0,1];}
+ let best=null;u.teams.slice().sort((a,b)=>b.length-a.length).forEach(t=>{const i=lw.indexOf(t);if(i>=0&&(!best||i<best[0]||(i===best[0]&&t.length>best[1])))best=[i,t.length];});
+ return best||[0,1];
+}
+BOOK2.forEach(d=>mkUnit(2,d));BOOK3.forEach(d=>mkUnit(3,d));
+const UB=(b,n)=>UNITS.find(u=>u.book===b&&u.u===n);
+
+const GAMES={review:['🔁','Ôn từ khó'],listen:['👂','Nghe & chọn hình'],missing:['🔤','Điền chữ thiếu'],memory:['🃏','Lật thẻ'],speak:['🗣️','Nói theo'],sight:['🌳','Sight words'],rhyme:['🎵','Tìm hình cùng vần'],unscramble:['🧩','Xếp chữ'],story:['📖','Đọc câu (Story)'],reader:['📚','Truyện đọc']};
+
+/* ============ 200 LEVEL theo đúng thứ tự sách ============ */
+const LEVELS=[],SECTIONS=[];
+function sec(o){o.from=LEVELS.length+1;SECTIONS.push(o);return o;}
+function lvl(s,o){o.n=LEVELS.length+1;o.sec=s;o.book=s.book;o.col=s.col;LEVELS.push(o);s.to=o.n;}
+let sightIdx=0;
+function unitLevels(u){
+ const s=sec({book:u.book,label:'Unit '+u.u+' · '+u.title,unit:u,col:u.col,chips:u.lessons.map(l=>({t:l.name,v:l.video,pl:u.pl})).concat([{t:'Story',v:u.story,pl:u.pl,cls:'st'}])});
+ const L=u.lessons, B2=u.book===2;
+ const plan=B2?[['listen','missing','speak'],['listen','memory','missing'],['listen','unscramble','speak']]:
+  (L.length===3?[['listen','missing'],['listen','unscramble'],['speak','memory']]:[['listen','missing','unscramble'],['listen','missing','speak']]);
+ L.forEach((les,i)=>plan[i].forEach((g,k)=>lvl(s,{game:g,us:[u.i],les,label:u.name.split(' · ')[0]+' · '+les.name,video:yt(les.video,u.pl),hard:i===L.length-1&&k>0})));
+ const tail=B2?['story','sight','rhyme']:['story','sight','memory','speak'];
+ tail.forEach(g=>{const o={game:g,us:[u.i],label:'Unit '+u.u+' · Story',video:yt(u.story,u.pl),hard:true};if(g==='sight'){o.sight=[sightIdx,sightIdx+(B2?4:3)];sightIdx+=B2?4:3;}lvl(s,o);});
+ s.words=u.words.map(o=>o.w).join(', ');
+}
+function reviewLevels(book,r){
+ const us=r.units.map(n=>UB(book,n).i),pl=book===2?PL2:PL3;
+ const s=sec({book,label:'Review '+r.r+' · '+r.title,col:'#3B2E5A',review:true,chips:[{t:'Song',v:r.song,pl,cls:'sg'}],words:'Ôn Unit '+r.units.join(' & ')+(r.reader?' · Truyện "'+READERS[r.reader].t+'"':'')});
+ const g=book===2?['listen','memory','missing']:['listen'];
+ if(book===3)g.push(r.reader?'reader':(r.r===1?'unscramble':'memory'));
+ else g.push(r.reader?'reader':'story');
+ if(book===3&&!r.reader)g[0]='memory',g[1]='unscramble';
+ g.forEach(x=>lvl(s,{game:x,us,label:'Review '+r.r+(x==='reader'?' · 📚 '+READERS[r.reader].t:''),video:yt(r.song,pl),hard:true,review:true,reader:x==='reader'?r.reader:null}));
+}
+for(let n=1;n<=8;n++){unitLevels(UB(2,n));if(n%2===0)reviewLevels(2,REV2[n/2-1]);}
+for(let n=1;n<=8;n++){unitLevels(UB(3,n));if(n%2===0)reviewLevels(3,REV3[n/2-1]);}
+SECTIONS.forEach(s=>{for(let n=s.from;n<=s.to;n++)LEVELS[n-1].last=n===s.to;});
+
+/* ============ HỒ SƠ BÉ ============ */
+let DB={cur:null,kids:{}};
+try{const s=JSON.parse(localStorage.getItem('phonicsKids')||'null');if(s&&s.kids)DB=s;}catch(e){}
+function save(){try{localStorage.setItem('phonicsKids',JSON.stringify(DB));}catch(e){}}
+function norm(k){if(!k)return k;k.stars=k.stars||{};k.max=k.max||0;k.points=k.points||0;k.spent=k.spent||0;k.owned=k.owned||[];k.wrong=k.wrong||{};k.learned=k.learned||{};k.log=k.log||{};k.av=k.av||'';return k;}
+const K=()=>norm(DB.kids[DB.cur]);
+const coins=k=>k.points-k.spent;
+const newKid=()=>norm({stars:{},max:0,points:0});
+const starsOf=k=>Object.values(k.stars).reduce((a,b)=>a+b,0);
+let L=null,Q=[],qi=0,score=0,firstTry=true,busy=false,gain=0,freeUnit=0,unlockAll=false;
+const $=s=>document.querySelector(s);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.random()*a.length|0];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniqE=a=>a.filter((x,i)=>a.findIndex(y=>y.e===x.e||y.w.toLowerCase()===x.w.toLowerCase())===i);
+function hud(){const k=K();if(!k){$('#score').classList.add('hidden');return;}
+ $('#score').classList.remove('hidden');$('#sName').textContent=(k.av||'👤')+' '+DB.cur;$('#sStars').textContent=starsOf(k);$('#sPts').textContent=coins(k);}
+function addPts(n){const k=K();if(!k)return;k.points+=n;gain+=n;save();hud();}
+function show(id){['profile','home','game','mem','result'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==id));
+ $('#homeBtn').classList.toggle('hidden',id==='home'||id==='profile');
+ if(id==='home'||id==='profile')$('#vidBtn').classList.add('hidden');window.scrollTo(0,0);}
+function setTitle(t,s){$('#hudTitle').innerHTML=t+'<small>'+(s||'')+'</small>';}
+
+function renderProfile(){
+ setTitle('🌟 Bé Vui Học Phonics','Oxford Phonics World 2 · 3 · Sight Word Trees · Readers');
+ const names=Object.keys(DB.kids);$('#kidsBox').classList.toggle('hidden',!names.length);
+ const box=$('#kids');box.innerHTML='';
+ names.forEach(n=>{const k=norm(DB.kids[n]);const b=document.createElement('button');b.className='btn kid';b.innerHTML=(k.av?k.av+' ':'')+esc(n)+'<small>Level '+Math.min(k.max+1,200)+' · 🏆 '+coins(k)+'</small>';b.onclick=()=>login(n);box.appendChild(b);});
+ $('#nameIn').value='';$('#nameErr').textContent='';show('profile');hud();
+}
+function login(n){DB.cur=n;if(!DB.kids[n])DB.kids[n]=newKid();save();hud();goHome();}
+$('#goBtn').onclick=()=>{const n=$('#nameIn').value.trim().replace(/\s+/g,' ');if(!n){$('#nameErr').textContent='Bé nhập tên trước nhé!';return;}login(n);};
+$('#nameIn').onkeydown=e=>{if(e.key==='Enter')$('#goBtn').click();};
+$('#score').onclick=()=>{try{speechSynthesis.cancel();}catch(e){}renderProfile();};
+$('#switchBtn').onclick=renderProfile;
+$('#homeBtn').onclick=()=>goHome();
+
+/* ---- âm thanh ---- */
+let voice=null;
+function loadVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Google|Samantha|Aria|Jenny|Female/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;}catch(e){}}
+try{loadVoice();speechSynthesis.onvoiceschanged=loadVoice;}catch(e){}
+function say(t,rate){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';if(voice)u.voice=voice;u.rate=rate||0.8;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+let ac=null;
+function tone(f,d,type,when){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type||'sine';o.frequency.value=f;const t=ac.currentTime+(when||0);g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);}catch(e){}}
+const ding=()=>{tone(660,.15,'triangle');tone(880,.15,'triangle',.12);tone(1320,.25,'triangle',.24);};
+const fanfare=()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.3,'triangle',i*.15));};
+const buzz=()=>tone(160,.3,'sawtooth');
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1000);}
+function burst(x,y,n){const em=['⭐','🎉','✨','🌟','💖'];for(let k=0;k<(n||12);k++){const d=document.createElement('div');d.className='fx';d.textContent=pick(em);d.style.left=x+'px';d.style.top=y+'px';const a=Math.random()*Math.PI*2,r=90+Math.random()*120;d.style.setProperty('--dx',Math.cos(a)*r+'px');d.style.setProperty('--dy',Math.sin(a)*r+'px');document.body.appendChild(d);setTimeout(()=>d.remove(),1200);}}
+const PRAISE=["Great job!","Excellent!","Well done!","Super!","Awesome!","Good job!"];
+const VI_OK=["Giỏi quá! 🎉","Đúng rồi! 👏","Tuyệt vời! 🌟","Xuất sắc! 🏅"];
+
+/* ============ BẢN ĐỒ ============ */
+function isOpen(n){return unlockAll||n<=K().max+1;}
+function chipHTML(c){return '<a class="chip '+(c.cls||'')+'" href="'+yt(c.v,c.pl)+'" target="_blank" rel="noopener">📺 '+esc(c.t)+'</a>';}
+function renderMap(){
+ const k=K(),m=$('#t-map');m.innerHTML='';let lastBook=0;
+ SECTIONS.forEach(s=>{
+  if(s.book!==lastBook){lastBook=s.book;const h=document.createElement('div');h.className='lvbook';h.innerHTML='<h2 style="margin:6px 0">📘 Sách '+s.book+' · '+(s.book===2?'Short Vowels':'Long Vowels')+' <a class="chip" href="'+yt(s.book===2?INTRO2:INTRO3,s.book===2?PL2:PL3)+'" target="_blank" rel="noopener">📺 Intro</a></h2>';m.appendChild(h);}
+  const d=document.createElement('div');d.className='sec';
+  let done=0;for(let n=s.from;n<=s.to;n++)if(k.stars[n])done++;
+  d.innerHTML='<h3><span class="tag">Sách '+s.book+'</span>'+esc(s.label)+'<span class="prog2">'+done+'/'+(s.to-s.from+1)+'</span></h3><div class="wl">'+esc(s.words||'')+'</div><div class="chips">'+s.chips.map(chipHTML).join('')+'</div><div class="lvgrid"></div>';
+  const g=d.querySelector('.lvgrid');
+  for(let n=s.from;n<=s.to;n++){
+   const lv=LEVELS[n-1],st=k.stars[n]||0,open=isOpen(n);
+   const b=document.createElement('div');b.className='lv'+(open?'':' lock')+(n===k.max+1?' cur':'');b.id='lv'+n;b.title=lv.label;
+   b.innerHTML='<div class="c" style="background:'+lv.col+'"><i>'+(open?GAMES[lv.game][0]:'🔒')+'</i>'+n+'</div><div class="s">'+(st?'⭐'.repeat(st):'')+'</div>';
+   b.onclick=()=>{if(open)startLevel(lv);else toast('Hoàn thành level trước nhé! 🔒');};
+   g.appendChild(b);
+  }
+  m.appendChild(d);
+ });
+ const next=Math.min(k.max+1,200),nl=LEVELS[next-1];
+ $('#contBtn').innerHTML=(k.max>=200?'🏆 Bé đã hoàn thành 200 level!':'▶️ Chơi tiếp Level '+next)+'<small>Sách '+nl.book+' · '+esc(nl.label)+' · '+GAMES[nl.game][0]+' '+GAMES[nl.game][1]+'</small>';
+ $('#contBtn').onclick=()=>startLevel(nl);
+}
+function goHome(){try{speechSynthesis.cancel();}catch(e){}
+ if(!K())return renderProfile();
+ setTitle('Chào '+esc(DB.cur)+'! 👋','Oxford Phonics World 2 · 3 · Sight Word Trees · Readers');
+ renderMap();renderRevBtn();if(!$('#t-shop').classList.contains('hidden'))renderShop();if(!$('#t-rep').classList.contains('hidden'))renderReport();show('home');hud();
+ setTimeout(()=>{const c=$('#lv'+Math.min(K().max+1,200));if(c&&!$('#t-map').classList.contains('hidden'))c.scrollIntoView({block:'center',behavior:'smooth'});},150);}
+function setTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===id));['map','free','vid','shop','rep'].forEach(i=>$('#t-'+i).classList.toggle('hidden',i!==id));if(id==='shop')renderShop();if(id==='rep')renderReport();if(K())renderRevBtn();}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setTab(t.dataset.t));
+$('#unlockAll').onchange=e=>{unlockAll=e.target.checked;renderMap();};
+$('#resetBtn').onclick=function(){if(this.dataset.c){DB.kids[DB.cur]=newKid();save();this.dataset.c='';this.textContent='Xoá tiến độ của bé này';renderMap();renderShop();renderReport();hud();toast('Đã xoá tiến độ');}else{this.dataset.c='1';this.textContent='⚠️ Bấm lần nữa để xoá';}};
+function renderFree(){
+ const box=$('#units');box.innerHTML='';
+ UNITS.forEach((u,i)=>{const b=document.createElement('button');b.className='btn unit'+(freeUnit===i?' on':'');b.style.background=u.col;b.textContent='S'+u.book+' U'+u.u+' · '+u.lessons.map(l=>l.name).join(' ');b.onclick=()=>{freeUnit=i;renderFree();};box.appendChild(b);});
+ const M=$('#modes');M.innerHTML='';const cols=['#FF6B6B','#339AF0','#2FBF71','#FF9F43','#B45BE0','#F76707','#0CA678','#4263EB'];
+ Object.keys(GAMES).filter(g=>g!=='reader'&&g!=='review').forEach((g,k)=>{if(g==='rhyme'&&UNITS[freeUnit].book!==2)return;const b=document.createElement('button');b.className='btn mode';b.style.background=cols[k];b.innerHTML='<span class="ic">'+GAMES[g][0]+'</span>'+GAMES[g][1];
+  b.onclick=()=>{const u=UNITS[freeUnit];startLevel({n:0,free:true,us:[freeUnit],game:g,hard:true,label:'Tự do · Unit '+u.u,book:u.book,col:u.col,video:yt(u.story,u.pl),sight:[0,u.book===2?32:SIGHT.length]});};M.appendChild(b);});
+ const lib=$('#lib');lib.innerHTML='';
+ Object.entries(READERS).forEach(([id,r])=>{const b=document.createElement('button');b.className='btn book';b.innerHTML='<b>'+r.e+'</b>'+esc(r.t)+'<small>Readers Level '+r.lv+'</small>';
+  b.onclick=()=>startLevel({n:0,free:true,us:[],game:'reader',reader:id,hard:true,label:'📚 '+r.t,book:r.lv,col:'#3B2E5A'});lib.appendChild(b);});
+}
+(function(){const v=$('#vids');
+ [[2,PL2,INTRO2],[3,PL3,INTRO3]].forEach(([b,pl,intro])=>{
+  const g=document.createElement('div');g.className='vgroup';g.innerHTML='<h3>📘 Sách '+b+' · Intro</h3><div class="chips">'+chipHTML({t:'Intro',v:intro,pl})+'</div>';v.appendChild(g);
+  SECTIONS.filter(s=>s.book===b).forEach(s=>{const d=document.createElement('div');d.className='vgroup';d.innerHTML='<h3>'+esc(s.label)+'</h3><div class="chips">'+s.chips.map(chipHTML).join('')+'</div>';v.appendChild(d);});
+ });})();
+
+/* ============ ĐỘNG CƠ LEVEL ============ */
+function levelPool(lv){
+ if(lv.pool)return lv.pool;
+ if(lv.game==='reader')return [];
+ let p;
+ if(lv.les&&!lv.free){p=lv.les.words.slice();if(p.length<5){const extra=lv.les.unit.words.filter(o=>o.les!==lv.les&&lv.les.unit.lessons.indexOf(o.les)<lv.les.unit.lessons.indexOf(lv.les));p=p.concat(shuffle(extra).slice(0,5-p.length));}if(p.length<4)p=p.concat(shuffle(lv.les.unit.words.filter(o=>!p.includes(o))).slice(0,4-p.length));}
+ else p=lv.us.flatMap(i=>UNITS[i].words);
+ if(lv.hard&&!lv.review&&!lv.free&&lv.us.length===1){const u=UNITS[lv.us[0]],prev=UNITS.filter(x=>x.book===u.book&&x.u<u.u).flatMap(x=>x.words);if(prev.length)p=p.concat(shuffle(prev).slice(0,3));}
+ return uniqE(p);
+}
+const nQ=lv=>lv.hard?8:6, nOpt=lv=>lv.hard?4:3, nPairs=lv=>lv.review?8:lv.hard?6:4;
+function storyPool(lv){return lv.us.flatMap(i=>STORY[UNITS[i].id]||[]);}
+function title(lv){return (lv.free?'':'Level '+lv.n+' · ')+GAMES[lv.game][0]+' '+GAMES[lv.game][1];}
+const rime=w=>w.toLowerCase().slice(-2);
+function sightPool(lv){const [a,b]=lv.sight||[0,SIGHT.length];const nw=SIGHT.slice(a,b),old=SIGHT.slice(0,a);return {nw,old,all:SIGHT.slice(0,Math.max(b,8))};}
+
+function startLevel(lv){
+ if(!K())return renderProfile();
+ L=lv;qi=0;score=0;gain=0;
+ setTitle(title(lv),(lv.game==='review'?'':'Sách '+lv.book+' · ')+esc(lv.label));
+ const vb=$('#vidBtn');if(lv.video){vb.href=lv.video;vb.classList.remove('hidden');}else vb.classList.add('hidden');
+ if(lv.game==='memory')return startMemory();
+ if(lv.game==='review'){Q=reviewQ(lv);if(!Q.length){toast('Bé không còn từ khó nào! 🎉');return goHome();}show('game');return renderQ();}
+ const n=nQ(lv);
+ if(lv.game==='reader'){Q=READERS[lv.reader].pages.slice();}
+ else if(lv.game==='sight'){const sp=sightPool(lv);let src=shuffle(sp.nw).concat(shuffle(sp.nw)).slice(0,Math.min(n,sp.nw.length*2));src=src.concat(shuffle(sp.old)).slice(0,n);while(src.length<n)src.push(pick(sp.all));Q=src.map(x=>({t:Math.random()<.65?'sent':'hear',s:x}));}
+ else if(lv.game==='story'){let src=shuffle(storyPool(lv));while(src.length<n)src=src.concat(shuffle(storyPool(lv)));Q=src.slice(0,n);}
+ else{let pool=levelPool(lv);
+  if(lv.game==='rhyme'){pool=uniqE(lv.us.flatMap(i=>UNITS[i].words));pool=pool.filter(o=>pool.some(x=>x!==o&&rime(x.w)===rime(o.w)));}
+  if(lv.game==='unscramble')pool=pool.filter(o=>o.w.length<=7);
+  if(!pool.length){pool=levelPool(lv);L=lv={...lv,game:'listen'};}
+  let p=shuffle(pool);while(p.length<n)p=p.concat(shuffle(pool));Q=p.slice(0,n);}
+ show('game');renderQ();
+}
+function mkOpt(cls,html){const b=document.createElement('button');b.className='btn '+cls;b.innerHTML=html;return b;}
+function parts(o){const [i,len]=o.t;return [o.w.slice(0,i),o.w.substr(i,len),o.w.slice(i+len)];}
+const VCOL={a:'#FF6B6B',e:'#FF9F43',i:'#2FBF71',o:'#339AF0',u:'#B45BE0'};
+const TCOL=['#FF6B6B','#339AF0','#2FBF71','#B45BE0'];
+function sentenceQ(P,O,s,em,ans,wordsPool,page){
+ const full=s.replace('___',ans);
+ P.innerHTML=(page||'')+'<div class="bigemoji" style="font-size:68px">'+em+'</div><div class="sentence">'+esc(s).replace('___','<span class="blank" id="bl">?</span>')+'</div><button class="btn speak sm" id="sp">🔊</button><div class="hint">Chọn từ đúng điền vào câu</div>';
+ $('#sp').onclick=()=>say(s.replace('___','hmm'));
+ const cap=/^[A-Z]/.test(ans)&&ans!=='I';
+ const fix=w=>w==='I'?w:(cap?w[0].toUpperCase()+w.slice(1):w.toLowerCase()===w?w:w);
+ const others=shuffle([...new Set(wordsPool.filter(w=>w.toLowerCase()!==ans.toLowerCase()))]).slice(0,2).map(fix);
+ O.className='opts c3';
+ shuffle([ans,...others]).forEach(x=>{const b=mkOpt('opt txt',esc(x));b.onclick=()=>answer(b,x===ans,full,()=>{$('#bl').textContent=ans;});O.appendChild(b);});
+}
+function renderQ(){
+ busy=false;firstTry=true;
+ $('#bar').style.width=(qi/Q.length*100)+'%';
+ const P=$('#prompt'),O=$('#opts');P.innerHTML='';O.innerHTML='';O.className='opts';
+ const q=Q[qi],game=q.g||L.game;
+ curKey=keyOf(q,game);
+ if(game==='listen'){
+  P.innerHTML='<button class="btn speak" id="sp">🔊</button><div class="hint">Nghe và chọn hình đúng</div>';
+  $('#sp').onclick=()=>say(q.w);
+  const others=uniqE(shuffle(levelPool(L).filter(x=>x.w!==q.w&&x.e!==q.e))).slice(0,nOpt(L)-1);
+  if(others.length===2)O.className='opts c3';
+  shuffle([q,...others]).forEach(x=>{const b=mkOpt('opt','<span>'+x.e+'</span><span class="lbl"></span>');b.onclick=()=>answer(b,x===q,q.w,()=>{b.querySelector('.lbl').textContent=q.w;});O.appendChild(b);});
+  setTimeout(()=>say(q.w),350);
+ }
+ else if(game==='missing'){
+  const [a,t,c]=parts(q),tl=t.toLowerCase();
+  P.innerHTML='<div class="bigemoji">'+q.e+'</div><div class="word"><span>'+a+'</span><span class="blank" id="bl">'+'&nbsp;'.repeat(t.length)+'</span><span>'+c+'</span></div><button class="btn speak sm" id="sp">🔊</button>';
+  $('#sp').onclick=()=>say(q.w);
+  let choices;
+  if(q.u.kind==='t'){const set=[tl];q.u.teams.concat(shuffle(ALLTEAMS)).forEach(x=>{if(set.length<4&&!set.includes(x))set.push(x);});choices=shuffle(set);}
+  else{choices=['a','e','i','o','u'];O.className='opts c5';}
+  choices.forEach((v,k)=>{const b=mkOpt('opt vow',v);b.style.background=VCOL[v]||TCOL[k%4];b.onclick=()=>answer(b,v===tl,q.w,()=>{$('#bl').textContent=t;});O.appendChild(b);});
+  setTimeout(()=>say(q.w),350);
+ }
+ else if(game==='rhyme'){
+  const pool=uniqE(L.us.flatMap(i=>UNITS[i].words)),r=rime(q.w);
+  const right=shuffle(pool.filter(x=>x!==q&&rime(x.w)===r))[0];
+  const wrong=uniqE(shuffle(pool.filter(x=>rime(x.w)!==r&&x.e!==right.e))).slice(0,nOpt(L)-1);
+  P.innerHTML='<div class="bigemoji">'+q.e+'</div><div class="sayword">'+q.w.slice(0,-2)+'<b>'+q.w.slice(-2)+'</b></div><div class="hint">Hình nào cùng vần với "'+q.w+'"? 🎵</div>';
+  P.querySelector('.bigemoji').onclick=()=>say(q.w);
+  if(wrong.length===2)O.className='opts c3';
+  shuffle([right,...wrong]).forEach(x=>{const b=mkOpt('opt','<span>'+x.e+'</span><span class="lbl"></span>');b.onclick=()=>{answer(b,x===right,q.w+', '+right.w,()=>{b.querySelector('.lbl').textContent=x.w;});};O.appendChild(b);});
+  setTimeout(()=>say(q.w),350);
+ }
+ else if(game==='unscramble'){
+  const w=q.w.toLowerCase();let sh;do{sh=shuffle([...w]);}while(sh.join('')===w&&w.length>1);
+  P.innerHTML='<div class="bigemoji">'+q.e+'</div><div class="slots">'+[...w].map((_,i)=>'<div class="slot" id="sl'+i+'"></div>').join('')+'</div><button class="btn speak sm" id="sp">🔊</button><div class="hint">Bấm các chữ theo đúng thứ tự (Unscramble)</div>';
+  $('#sp').onclick=()=>say(q.w);
+  O.className='tiles';let pos=0;
+  sh.forEach(ch=>{const b=mkOpt('tile',ch);b.onclick=()=>{
+   if(busy||b.classList.contains('used'))return;
+   if(ch===w[pos]){b.classList.add('used');$('#sl'+pos).textContent=q.w[pos];pos++;tone(700+pos*60,.08,'triangle');if(pos===w.length)answer($('#prompt'),true,q.w);}
+   else{noteWrong();firstTry=false;b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');buzz();}
+  };O.appendChild(b);});
+  setTimeout(()=>say(q.w),350);
+ }
+ else if(game==='speak'){
+  const [a,t,c]=parts(q);
+  P.innerHTML='<div class="bigemoji">'+q.e+'</div><div class="sayword">'+a+'<b>'+t+'</b>'+c+'</div><div class="saybtns"><button class="btn" id="sp1">🔊 Nghe mẫu</button><button class="btn" id="sp2">🐢 Nghe chậm</button></div>'+(SR&&!micBlocked?'<div class="saybtns"><button class="btn mic" id="mic">🎤 Bé nói</button></div>':'')+'<div class="hint">Bé nghe rồi đọc to theo nhé! 🗣️</div>';
+  $('#sp1').onclick=()=>say(q.w);$('#sp2').onclick=()=>say(q.w,0.4);
+  O.className='judge';
+  const ok=mkOpt('ok','👍 Đúng rồi!<small>Bé đọc chuẩn</small>'),re=mkOpt('re','🔁 Đọc lại<small>Nghe mẫu và thử lại</small>');
+  ok.onclick=()=>answer(ok,true,'');
+  re.onclick=()=>{if(busy)return;noteWrong();firstTry=false;toast('Nghe lại nào! 👂');setTimeout(()=>say(q.w,0.6),300);};
+  O.appendChild(ok);O.appendChild(re);
+  if($('#mic'))$('#mic').onclick=()=>listenMic(q.w,ok);
+  setTimeout(()=>say(q.w),350);
+ }
+ else if(game==='story'){
+  const [s,em,ans]=q;sentenceQ(P,O,s,em,ans,levelPool(L).map(o=>o.w));
+ }
+ else if(game==='reader'){
+  const r=READERS[L.reader],page='<div class="page">📚 '+esc(r.t)+' · trang '+(qi+1)+'/'+Q.length+'</div>';
+  if(q[0]==='who'){
+   const [,quote,ans,opts]=q;
+   P.innerHTML=page+'<div class="bigemoji" style="font-size:60px">💬</div><div class="sentence">'+esc(quote)+'</div><button class="btn speak sm" id="sp">🔊</button><div class="hint">Ai nói câu này? (Who said it?)</div>';
+   $('#sp').onclick=()=>say(quote);O.className='opts c3';
+   const ic={Kit:'👧',Dad:'👨',Mom:'👩'};
+   shuffle(opts).forEach(x=>{const b=mkOpt('opt txt','<span style="font-size:44px">'+(ic[x]||'🙂')+'</span>'+esc(x));b.onclick=()=>answer(b,x===ans,ans);O.appendChild(b);});
+   setTimeout(()=>say(quote),350);
+  }else{const [s,em,ans]=q;sentenceQ(P,O,s,em,ans,r.words.split(','),page);setTimeout(()=>say(s.replace('___','hmm')),350);}
+ }
+ else if(game==='sight'){
+  const [s,em,ans]=q.s,sp=sightPool(L),pool=[...new Set(sp.all.map(SW))];
+  if(q.t==='sent'){
+   P.innerHTML='<div class="bigemoji" style="font-size:62px">'+em+'</div><div class="sentence">'+esc(s).replace('___','<span class="blank" id="bl">?</span>')+'</div><div class="hint">Sight word: chọn từ đúng điền vào chỗ trống</div>';
+   O.className='opts c3';
+   const cap=/^[A-Z]/.test(ans)&&ans!=='I';
+   const fix=x=>x==='I'?x:(cap?x[0].toUpperCase()+x.slice(1):x);
+   const others=shuffle(pool.filter(x=>x.toLowerCase()!==ans.toLowerCase())).slice(0,2).map(fix);
+   const full=s.replace('___',ans);
+   shuffle([ans,...others]).forEach(x=>{const b=mkOpt('opt txt',esc(x));b.onclick=()=>answer(b,x===ans,full,()=>{$('#bl').textContent=ans;});O.appendChild(b);});
+  }else{
+   const w=ans==='I'?'I':ans.toLowerCase();
+   P.innerHTML='<button class="btn speak" id="sp">🔊</button><div class="hint">Nghe và chọn sight word đúng</div>';
+   $('#sp').onclick=()=>say(w);
+   const others=shuffle(pool.filter(x=>x.toLowerCase()!==w.toLowerCase())).slice(0,nOpt(L)-1);
+   if(others.length===2)O.className='opts c3';
+   shuffle([w,...others]).forEach(x=>{const b=mkOpt('opt txt',esc(x));b.onclick=()=>answer(b,x===w,w);O.appendChild(b);});
+   setTimeout(()=>say(w),350);
+  }
+ }
+}
+function answer(b,ok,speakText,onRight){
+ if(busy||b.classList.contains('wrong'))return;
+ activity();
+ if(ok){
+  noteRight();
+  busy=true;b.classList.add('right');onRight&&onRight();
+  if(firstTry){score++;addPts(10);}else addPts(5);
+  ding();const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+Math.min(r.height/2,150));toast(pick(VI_OK));
+  setTimeout(()=>say(pick(PRAISE)+(speakText?' '+speakText:'')),250);
+  setTimeout(()=>{qi++;if(qi>=Q.length){const ra=score/Q.length;finish(ra>=.9?3:ra>=.7?2:ra>=.5?1:0,score+'/'+Q.length+' câu đúng ngay lần đầu');}else renderQ();},speakText?2500:1600);
+ }else{
+  noteWrong();firstTry=false;b.classList.add('wrong');buzz();toast('Thử lại nhé! 💪');setTimeout(()=>say('Try again!'),150);
+ }
+}
+
+/* ---- lật thẻ ---- */
+let memFirst=null,memLock=false,memMoves=0,memDone=0,memPairs=6;
+function startMemory(){
+ show('mem');memFirst=null;memLock=false;memMoves=0;memDone=0;$('#moves').textContent='Số lần lật: 0';
+ let pool=levelPool(L);if(pool.length<nPairs(L)&&L.us.length)pool=uniqE(pool.concat(shuffle(L.us.flatMap(i=>UNITS[i].words))));
+ const ws=uniqE(shuffle(pool)).slice(0,nPairs(L));memPairs=ws.length;
+ const cards=shuffle(ws.flatMap(o=>[{k:o.w,face:o.e,t:0},{k:o.w,face:o.w,t:1}]));
+ const g=$('#grid');g.innerHTML='';g.className='grid'+(cards.length>12?' g16':'');
+ cards.forEach(c=>{const d=document.createElement('div');d.className='card';d.innerHTML='<div class="in"><div class="f">❓</div><div class="b'+(c.t?' t':'')+'">'+c.face+'</div></div>';d.onclick=()=>flip(d,c);g.appendChild(d);});
+}
+function flip(d,c){
+ if(memLock||d.classList.contains('flip')||d.classList.contains('done'))return;
+ d.classList.add('flip');say(c.k);activity();
+ if(!memFirst){memFirst={d,c};return;}
+ memMoves++;$('#moves').textContent='Số lần lật: '+memMoves;
+ const a=memFirst;memFirst=null;
+ if(a.c.k===c.k){
+  setTimeout(()=>{a.d.classList.add('done');d.classList.add('done');ding();addPts(10);const r=d.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);memDone++;
+   if(memDone===memPairs){const s=memMoves<=memPairs*1.6?3:memMoves<=memPairs*2.3?2:1;setTimeout(()=>finish(s,'Bé lật '+memMoves+' lần'),900);}},350);
+ }else{memLock=true;setTimeout(()=>{a.d.classList.remove('flip');d.classList.remove('flip');memLock=false;},1000);}
+}
+
+/* ---- kết quả ---- */
+function finish(s,sub){
+ $('#bar').style.width='100%';
+ const pass=s>=1,lv=L,k=K();let badge='';
+ if(pass)addPts(s*10);
+ if(pass&&!lv.free){
+  if(s>(k.stars[lv.n]||0))k.stars[lv.n]=s;
+  if(lv.n>k.max)k.max=lv.n;save();hud();
+  if(lv.last)badge='🏅 Hoàn thành "'+lv.sec.label+'"!'+(lv.n===200?' Chinh phục cả 200 level! 🏆':'');
+ }
+ $('#rEmoji').textContent=!pass?'💪':s===3?'🏆':s===2?'🥳':'👍';
+ $('#rTitle').textContent=!pass?'Almost!':s===3?'Excellent!':s===2?'Great job!':'Good job!';
+ $('#rStars').textContent=pass?'⭐'.repeat(s)+'☆'.repeat(3-s):'☆☆☆';
+ $('#rSub').textContent=DB.cur+' · '+sub+(pass?'':' — Gần được rồi, thử lại nhé!');
+ $('#rGain').textContent='+'+gain+' điểm 🏆 (bé đang có '+coins(k)+')';
+ {const nx=STK.filter(x=>!k.owned.includes(x.e)).sort((a,b)=>a.c-b.c)[0];if(nx&&coins(k)>=nx.c&&pass)badge=(badge?badge+' ':'')+'🎁 Bé đủ điểm đổi quà rồi! Vào mục Đổi quà nhé.';}
+ $('#rBadge').textContent=badge;$('#rBadge').classList.toggle('hidden',!badge);
+ const R=$('#rBtns');R.innerHTML='';
+ const add=(txt,col,fn)=>{const b=mkOpt('',txt);b.style.background=col;b.onclick=fn;R.appendChild(b);};
+ if(pass&&!lv.free&&lv.n<200)add('▶️ Level '+(lv.n+1),'#FF6B6B',()=>startLevel(LEVELS[lv.n]));
+ if(lv.game==='review'&&!Object.keys(k.wrong).length);else add('🔁 Chơi lại','#2FBF71',()=>startLevel(lv.free?{...lv}:LEVELS[lv.n-1]));
+ add('🗺️ Bản đồ','#339AF0',goHome);
+ show('result');
+ if(badge){fanfare();setTimeout(()=>burst(innerWidth/2,innerHeight/3,30),200);}else ding();
+ setTimeout(()=>say($('#rTitle').textContent),400);
+}
+
+/* ============ THEO DÕI HỌC TẬP (từ sai, từ thuộc, thời gian) ============ */
+const WORDIDX={};UNITS.forEach(u=>u.words.forEach(o=>{const k=o.w.toLowerCase();if(!WORDIDX[k])WORDIDX[k]=o;}));
+const SIGHTIDX={};SIGHT.forEach(x=>{const k=SW(x).toLowerCase();if(!SIGHTIDX[k])SIGHTIDX[k]=x;});
+let curKey=null,lastAct=0;
+function keyOf(q,game){
+ if(['listen','missing','rhyme','unscramble','speak'].includes(game))return q.w.toLowerCase();
+ if(game==='sight')return SW(q.s).toLowerCase();
+ if(game==='story')return q[2].toLowerCase();
+ if(game==='reader')return q[0]==='who'?null:q[2].toLowerCase();
+ return null;
+}
+const pad=n=>(n<10?'0':'')+n;
+function dayKey(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function today(){const k=K(),t=dayKey();if(!k.log[t]){k.log[t]={s:0,q:0,ok:0};const ks=Object.keys(k.log).sort();while(ks.length>60)delete k.log[ks.shift()];}return k.log[t];}
+function activity(){const k=K();if(!k)return;const now=Date.now();if(lastAct&&now-lastAct<90000)today().s+=(now-lastAct)/1000;lastAct=now;save();}
+function noteWrong(){const k=K();if(!k||!curKey||!firstTry)return;k.wrong[curKey]=(k.wrong[curKey]||0)+1;const d=today();d.q++;save();}
+function noteRight(){const k=K();if(!k||!curKey||!firstTry)return;const d=today();d.q++;d.ok++;k.learned[curKey]=(k.learned[curKey]||0)+1;if(k.wrong[curKey]){k.wrong[curKey]--;if(k.wrong[curKey]<=0)delete k.wrong[curKey];}save();}
+function hardList(k){return Object.entries(k.wrong).filter(([w])=>WORDIDX[w]||SIGHTIDX[w]).sort((a,b)=>b[1]-a[1]);}
+function reviewQ(lv){
+ const k=K(),list=hardList(k).slice(0,10).map(x=>x[0]);if(!list.length)return [];
+ const objs=list.filter(w=>WORDIDX[w]).map(w=>WORDIDX[w]);
+ lv.pool=uniqE(objs.concat(shuffle([...new Set(objs.map(o=>o.u))].flatMap(u=>u.words))));
+ if(lv.pool.length<4)lv.pool=uniqE(lv.pool.concat(shuffle(UNITS[0].words)));
+ const mk=(w,i)=>{if(WORDIDX[w]){const o=WORDIDX[w],gs=o.w.length<=7?['listen','missing','unscramble','speak']:['listen','missing','speak'];return {...o,g:gs[i%gs.length]};}return {g:'sight',t:i%2?'hear':'sent',s:SIGHTIDX[w]};};
+ let q=shuffle(list).map((w,i)=>mk(w,i));
+ let i=1;while(q.length<6){q=q.concat(shuffle(list).map(w=>mk(w,i++)));}
+ return q.slice(0,Math.max(6,Math.min(q.length,10)));
+}
+function startReview(){startLevel({n:0,free:true,us:[],game:'review',hard:false,label:'Ôn lại từ bé hay sai',book:2,col:'#7048E8'});}
+function renderRevBtn(){const k=K(),n=hardList(k).length,b=$('#revBtn');b.classList.toggle('hidden',!n||$('#t-map').classList.contains('hidden'));
+ b.innerHTML='🔁 Ôn từ khó ('+n+' từ)<small>'+esc(hardList(k).slice(0,6).map(x=>x[0]).join(', '))+(n>6?'…':'')+'</small>';b.onclick=startReview;}
+$('#revBtn').onclick=startReview;
+
+/* ============ 🎤 BÉ TỰ NÓI, MÁY CHẤM ============ */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let micBlocked=false,rec=null;
+const NUMW={'1':'one','2':'two','3':'three','4':'four','5':'five','6':'six','7':'seven','8':'eight','9':'nine','10':'ten'};
+function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i];for(let j=1;j<=b.length;j++)m[i][j]=i?Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1)):j;}return m[a.length][b.length];}
+function heardOK(alts,w){w=w.toLowerCase();
+ return alts.some(t=>t.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean).map(x=>NUMW[x]||x).some(x=>x===w||(w.length>=3&&lev(x,w)<=1)||(w.length<3&&x.length<=3&&lev(x,w)<=1)));}
+function listenMic(w,okBtn){
+ if(busy)return;const btn=$('#mic');if(!btn)return;
+ try{speechSynthesis.cancel();}catch(e){}
+ try{if(rec)rec.abort();}catch(e){}
+ try{rec=new SR();}catch(e){micBlocked=true;btn.remove();toast('Máy này chưa dùng được micro');return;}
+ rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=5;
+ let got=false;
+ btn.classList.add('on');btn.textContent='👂 Đang nghe...';
+ rec.onresult=e=>{got=true;const alts=[];for(const r of e.results)for(const a of r)alts.push(a.transcript);
+  if(heardOK(alts,w)){answer(okBtn,true,'');}
+  else{noteWrong();firstTry=false;buzz();toast('Máy nghe là "'+(alts[0]||'?')+'" 🤔 Thử lại nhé!');setTimeout(()=>say(w,0.6),900);}};
+ rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'||e.error==='audio-capture'){micBlocked=true;btn.remove();toast('Máy chưa cho dùng micro. Bố mẹ chấm giúp bé nhé 👍');}
+  else if(e.error==='no-speech'){got=true;toast('Chưa nghe thấy, bé nói to hơn nhé! 🗣️');}};
+ rec.onend=()=>{if(document.body.contains(btn)){btn.classList.remove('on');btn.textContent='🎤 Bé nói';}};
+ try{rec.start();}catch(e){micBlocked=true;btn.remove();toast('Máy chưa cho dùng micro. Bố mẹ chấm giúp bé nhé 👍');}
+}
+
+/* ============ 🎁 ĐỔI QUÀ ============ */
+const STK=[['🐶','Cún con',30],['🐱','Mèo con',30],['🐰','Thỏ trắng',50],['🐼','Gấu trúc',50],['🦊','Cáo nhỏ',80],['🐸','Ếch xanh',80],['🐧','Chim cánh cụt',100],['🐨','Gấu koala',100],
+ ['🦁','Sư tử',150],['🐯','Hổ con',150],['🐵','Khỉ con',150],['🦄','Kỳ lân',200],['🐬','Cá heo',200],['🦖','Khủng long',250],['🐉','Rồng',300],['🦋','Bướm xinh',300],
+ ['🚀','Tên lửa',400],['🚒','Xe cứu hoả',400],['🏰','Lâu đài',500],['🧸','Gấu bông',500],['👑','Vương miện',700],['🌈','Cầu vồng',700],['💎','Kim cương',1000],['🏆','Cúp vô địch',1500]].map(([e,n,c])=>({e,n,c}));
+function renderShop(){
+ const k=K();if(!k)return;const box=$('#t-shop');
+ box.innerHTML='<div class="shophd"><div class="av">'+(k.av||'👤')+'</div><div class="cn">🏆 '+coins(k)+' điểm</div><div class="note" style="margin:0">Bộ sưu tập: '+k.owned.length+'/'+STK.length+' · Bấm sticker để đổi, sticker đã có thì bấm để làm hình đại diện</div></div><div class="stks"></div>';
+ const g=box.querySelector('.stks');
+ STK.forEach(x=>{const own=k.owned.includes(x.e),b=document.createElement('button');
+  b.className='btn stk'+(own?' own':coins(k)<x.c?' no':'')+(k.av===x.e?' sel':'');
+  b.innerHTML='<b>'+x.e+'</b>'+esc(x.n)+'<small style="font-size:12px;opacity:.8">'+(own?(k.av===x.e?'⭐ Đang dùng':'✅ Đã có'):'🏆 '+x.c)+'</small>';
+  b.onclick=()=>{
+   if(own){k.av=x.e;save();hud();renderShop();toast(x.e+' là hình đại diện mới!');return;}
+   if(coins(k)<x.c){toast('Cần thêm '+(x.c-coins(k))+' 🏆 nữa! 💪');buzz();return;}
+   k.owned.push(x.e);k.spent+=x.c;k.av=x.e;save();hud();fanfare();
+   const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,24);toast('Bé đổi được '+x.e+' '+x.n+'! 🎉');renderShop();};
+  g.appendChild(b);});
+}
+
+/* ============ 📊 BÁO CÁO BỐ MẸ ============ */
+function renderReport(){
+ const k=K();if(!k)return;const box=$('#t-rep');
+ const totalW=Object.keys(WORDIDX).length+Object.keys(SIGHTIDX).length;
+ const learnedN=Object.keys(k.learned).filter(w=>WORDIDX[w]||SIGHTIDX[w]).length;
+ let rows='',sumS=0,sumQ=0,sumOk=0;
+ for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=dayKey(d),l=k.log[key]||{s:0,q:0,ok:0},mn=l.s?Math.max(1,Math.round(l.s/60)):0;sumS+=mn;sumQ+=l.q;sumOk+=l.ok;
+  const lab=i===0?'Hôm nay':i===1?'Hôm qua':pad(d.getDate())+'/'+pad(d.getMonth()+1);
+  rows+='<tr><td>'+lab+'</td><td>'+mn+'</td><td>'+l.q+'</td><td>'+(l.q?Math.round(l.ok/l.q*100)+'%':'–')+'</td></tr>';}
+ const hl=Object.entries(k.wrong).sort((a,b)=>b[1]-a[1]).slice(0,20);
+ box.innerHTML='<div class="rp"><h3>📈 Tổng quan của '+esc(DB.cur)+'</h3><div class="stats">'+
+  '<div class="stat"><b>'+k.max+'/200</b>Level đã qua</div><div class="stat"><b>⭐ '+starsOf(k)+'</b>Tổng sao</div>'+
+  '<div class="stat"><b>'+learnedN+'/'+totalW+'</b>Từ đã trả lời đúng</div><div class="stat"><b>🏆 '+k.points+'</b>Tổng điểm đã kiếm</div></div></div>'+
+  '<div class="rp"><h3>🗓️ 7 ngày gần nhất</h3><table><tr><th>Ngày</th><th>Phút học</th><th>Số câu</th><th>Đúng ngay</th></tr>'+rows+
+  '<tr><th>Cộng</th><th>'+sumS+'</th><th>'+sumQ+'</th><th>'+(sumQ?Math.round(sumOk/sumQ*100)+'%':'–')+'</th></tr></table></div>'+
+  '<div class="rp"><h3>❗ Từ bé hay sai</h3>'+(hl.length?'<div class="note" style="margin:0 0 8px">Số nhỏ là số lần sai. Bé trả lời đúng ngay thì số giảm dần. Bấm từ để nghe.</div><div class="wrongs">'+hl.map(([w,n])=>'<button class="btn wr" data-w="'+esc(w)+'">🔊 '+esc(w)+' <small>×'+n+'</small></button>').join('')+'</div><button class="btn revbtn" style="margin:12px 0 0" id="repRev">🔁 Cho bé ôn ngay</button>':'<div class="note" style="margin:0">Chưa có từ nào bé hay sai. 👍</div>')+'</div>'+
+  '<p class="note">Số liệu chỉ lưu trên trình duyệt của máy này. Thời gian học chỉ tính lúc bé đang bấm chơi.</p>';
+ box.querySelectorAll('.wr').forEach(b=>b.onclick=()=>say(b.dataset.w));
+ const rr=$('#repRev');if(rr)rr.onclick=startReview;
+}
+
+renderFree();
+if(DB.cur&&DB.kids[DB.cur])goHome();else renderProfile();
+</script>
+</body>
+</html>
