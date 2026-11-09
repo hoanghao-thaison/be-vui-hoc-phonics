@@ -492,7 +492,7 @@ const AUD=/*AUDMAP*/{"ant":"0","apple":"1","cat":"2","alligator":"3","yam":"4","
 const actx=()=>(ac=ac||new (window.AudioContext||window.webkitAudioContext)());
 const abuf={};let playTok=0,curSrc=null;
 const akey=t=>String(t).toLowerCase().replace(/\s+/g,' ').trim();
-function getBuf(id){if(!abuf[id])abuf[id]=(typeof AUDDATA!=='undefined'&&AUDDATA[id]?Promise.resolve(Uint8Array.from(atob(AUDDATA[id]),c=>c.charCodeAt(0)).buffer):fetch('audio/'+id+'.mp3').then(r=>{if(!r.ok)throw new Error('404');return r.arrayBuffer();})).then(b=>new Promise((res,rej)=>actx().decodeAudioData(b,res,rej))).catch(e=>{delete abuf[id];throw e;});return abuf[id];}
+function getBuf(id){if(!abuf[id])abuf[id]=(typeof AUDDATA!=='undefined'&&AUDDATA[id]?Promise.resolve(Uint8Array.from(atob(AUDDATA[id]),c=>c.charCodeAt(0)).buffer):fetch('audio/'+id+'.mp3?v=2').then(r=>{if(!r.ok)throw new Error('404');return r.arrayBuffer();})).then(b=>new Promise((res,rej)=>actx().decodeAudioData(b,res,rej))).catch(e=>{delete abuf[id];throw e;});return abuf[id];}
 function hush(){playTok++;try{if(curSrc){curSrc.onended=null;curSrc.stop();}}catch(e){}curSrc=null;try{speechSynthesis.cancel();}catch(e){}}
 function say(t,rate){
  const list=(Array.isArray(t)?t:[t]).filter(Boolean);hush();const tok=playTok;
