@@ -227,6 +227,10 @@ h2{margin:14px 0 8px;font-size:18px}
  </div>
  <div class="parent">
   <label><input type="checkbox" id="unlockAll"> 🔓 Bố mẹ: mở khoá tất cả level</label>
+  <div style="margin-top:10px;font-weight:700">🗣️ Giọng đọc:
+   <select id="accentSel" style="font-family:inherit;font-size:15px;font-weight:700;padding:4px 8px;border-radius:10px;border:2px solid var(--line)"><option value="gb">🇬🇧 Giọng Anh (giống video sách)</option><option value="us">🇺🇸 Giọng Mỹ</option></select>
+   <button class="btn rs" id="voiceTest" style="background:#FFD43B;color:var(--ink);margin-top:6px">🔊 Nghe thử: fan, man, cat</button></div>
+  <div class="note" id="voiceInfo" style="margin-top:4px"></div>
   <div class="note">Mỗi level 1 trò. Đạt từ 1⭐ là mở level kế tiếp. Điểm 🏆 cộng dồn mỗi lần chơi: đúng ngay +10, đúng lần sau +5, hoàn thành level +10 mỗi sao. Điểm 🏆 dùng để đổi sticker ở mục 🎁 Đổi quà. Trò 🗣️: bé bấm 🎤 để máy tự nghe chấm (nếu máy cho dùng micro), hoặc bố mẹ ngồi cạnh bấm 👍 / 🔁.</div>
   <button class="btn rs" id="switchBtn" style="background:#339AF0">👥 Đổi bé khác</button>
   <button class="btn rs" id="resetBtn">Xoá tiến độ của bé này</button>
@@ -474,9 +478,16 @@ $('#homeBtn').onclick=()=>goHome();
 
 /* ---- âm thanh ---- */
 let voice=null;
-function loadVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/Google|Samantha|Aria|Jenny|Female/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;}catch(e){}}
+let accent='gb';try{accent=localStorage.getItem('phonicsAccent')||'gb';}catch(e){}
+const ALANG={gb:'en-GB',us:'en-US'};
+function loadVoice(){try{const vs=speechSynthesis.getVoices(),re=accent==='gb'?/en[-_]GB/i:/en[-_]US/i,nice=accent==='gb'?/Google|Kate|Serena|Libby|Sonia|Hazel|Female|Daniel|Arthur/i:/Google|Samantha|Aria|Jenny|Female/i;
+ voice=vs.find(v=>re.test(v.lang)&&nice.test(v.name))||vs.find(v=>re.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;showVoice();}catch(e){}}
+function showVoice(){const el=document.getElementById('voiceInfo');if(!el)return;
+ if(!voice){el.textContent='Máy chưa tải xong giọng đọc, thử bấm Nghe thử.';return;}
+ const ok=voice.lang.replace('_','-').toLowerCase().startsWith(ALANG[accent].toLowerCase());
+ el.textContent='Máy đang dùng giọng: '+voice.name+(ok?'':' ⚠️ (máy này chưa có giọng '+(accent==='gb'?'Anh':'Mỹ')+', đang dùng giọng thay thế)');}
 try{loadVoice();speechSynthesis.onvoiceschanged=loadVoice;}catch(e){}
-function say(t,rate){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';if(voice)u.voice=voice;u.rate=rate||0.8;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+function say(t,rate){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=ALANG[accent];if(voice)u.voice=voice;u.rate=rate||0.8;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
 let ac=null;
 function tone(f,d,type,when){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type||'sine';o.frequency.value=f;const t=ac.currentTime+(when||0);g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);}catch(e){}}
 const ding=()=>{tone(660,.15,'triangle');tone(880,.15,'triangle',.12);tone(1320,.25,'triangle',.24);};
@@ -518,6 +529,9 @@ function goHome(){try{speechSynthesis.cancel();}catch(e){}
  setTimeout(()=>{const c=$('#lv'+Math.min(K().max+1,200));if(c&&!$('#t-map').classList.contains('hidden'))c.scrollIntoView({block:'center',behavior:'smooth'});},150);}
 function setTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===id));['map','free','vid','shop','rep'].forEach(i=>$('#t-'+i).classList.toggle('hidden',i!==id));if(id==='shop')renderShop();if(id==='rep')renderReport();if(K())renderRevBtn();}
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setTab(t.dataset.t));
+$('#accentSel').value=accent;
+$('#accentSel').onchange=e=>{accent=e.target.value;try{localStorage.setItem('phonicsAccent',accent);}catch(x){}loadVoice();say('fan, man, cat');};
+$('#voiceTest').onclick=()=>{loadVoice();say('fan, man, cat');};
 $('#unlockAll').onchange=e=>{unlockAll=e.target.checked;renderMap();};
 $('#resetBtn').onclick=function(){if(this.dataset.c){DB.kids[DB.cur]=newKid();save();this.dataset.c='';this.textContent='Xoá tiến độ của bé này';renderMap();renderShop();renderReport();hud();toast('Đã xoá tiến độ');}else{this.dataset.c='1';this.textContent='⚠️ Bấm lần nữa để xoá';}};
 function renderFree(){
@@ -786,7 +800,7 @@ function listenMic(w,okBtn){
  try{speechSynthesis.cancel();}catch(e){}
  try{if(rec)rec.abort();}catch(e){}
  try{rec=new SR();}catch(e){micBlocked=true;btn.remove();toast('Máy này chưa dùng được micro');return;}
- rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=5;
+ rec.lang=ALANG[accent];rec.interimResults=false;rec.maxAlternatives=5;
  let got=false;
  btn.classList.add('on');btn.textContent='👂 Đang nghe...';
  rec.onresult=e=>{got=true;const alts=[];for(const r of e.results)for(const a of r)alts.push(a.transcript);
