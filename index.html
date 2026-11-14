@@ -1067,7 +1067,9 @@ function avatarSVG(w,size,opt){
  if(pet&&!opt.nopet)o+='<text x="16" y="154" font-size="28" text-anchor="middle">'+pet.e+'</text>';
  return '<svg viewBox="0 0 120 160" width="'+size+'" height="'+Math.round(size*4/3)+'" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block"><defs>'+defs+'</defs>'+o+'</svg>';
 }
-function kidAv(k,size,opt){normShop(k);return avatarSVG(k.wear,size,{...(opt||{}),photo:k.photoOn&&k.photo?k.photo:null});}
+const faceOf=id=>(id&&DB.faces&&DB.faces[id])||null;
+const kidFace=(k,kitId)=>k.photoOn&&k.photo?k.photo:faceOf(kitId);
+function kidAv(k,size,opt){normShop(k);return avatarSVG(k.wear,size,{...(opt||{}),photo:kidFace(k,k.wear.kit)});}
 function applyTheme(){const k=K();const bg=k&&normShop(k).wear.bg&&IT[k.wear.bg];document.documentElement.style.setProperty('--bg',bg?bg.page:'#FFF8E7');}
 /* ---- ảnh mặt của bé ---- */
 function loadPhoto(file,done){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=160;const s=Math.min(im.width,im.height);
@@ -1080,18 +1082,18 @@ function wearWith(k,id){const w={...k.wear},x=IT[id];if(!x)return w;
  else{w[x.cat]=id;if(['top','bottom'].includes(x.cat))w.kit='';}
  return w;}
 function cardHTML(x,k){const isK=x.cat==='kit';
- const av=avatarSVG(isK?{...DEFWEAR,kit:x.id,shoes:'cleats',hair:k.wear.hair,acc:'ball'}:{...DEFWEAR,kit:x.id,hair:x.hair,hat:x.hat,shoes:x.shoes,acc:'wand'},76,{photo:k.photoOn&&k.photo?k.photo:null});
+ const av=avatarSVG(isK?{...DEFWEAR,kit:x.id,shoes:'cleats',hair:k.wear.hair,acc:'ball'}:{...DEFWEAR,kit:x.id,hair:x.hair,hat:x.hat,shoes:x.shoes,acc:'wand'},76,{photo:faceOf(x.id)||(k.photoOn&&k.photo?k.photo:null)});
  return '<div class="pcard '+(isK?'fb':'pr')+'"><div class="pnum">'+(isK?x.top.num:x.ic)+'</div><div class="pflag">'+(isK?x.flag:'👑')+'</div>'+av+'</div>';}
 function renderShop(){
  const k=K();if(!k)return;normShop(k);const box=$('#t-shop');
- const tx=tryId&&IT[tryId],preview=tx?wearWith(k,tryId):k.wear,ph=k.photoOn&&k.photo?k.photo:null;
+ const tx=tryId&&IT[tryId],preview=tx?wearWith(k,tryId):k.wear,ph=k.photoOn&&k.photo?k.photo:null,pk=IT[preview.kit],fk=pk&&pk.cat==='kit'?pk:null;
  const nOwn=ITEMS.filter(x=>x.c&&k.inv.includes(x.id)).length,nAll=ITEMS.filter(x=>x.c).length;
  let act='';
  if(tx){const own=owns(k,tx.id);
   act=own?'<button class="btn buy" id="wearBtn" style="background:#2FBF71">👕 Mặc '+esc(tx.n)+'</button>':
    (coins(k)>=tx.c?'<button class="btn buy" id="buyBtn">🎁 Đổi · 🏆 '+tx.c+'</button>':'<div class="need">Cần thêm '+(tx.c-coins(k))+' 🏆 nữa. Học tiếp nào! 💪</div>')+'<button class="btn buy" id="tryOff" style="background:#adb5bd">↩️ Bỏ thử</button>';}
- box.innerHTML='<div class="shophd"><div class="stage">'+avatarSVG(preview,150,{photo:ph})+'</div><div style="flex:1;min-width:0"><div class="cn">🏆 '+coins(k)+'</div><div class="note" style="margin:0 0 6px">Đã sưu tầm '+nOwn+'/'+nAll+' món</div>'+(tx?'<div class="trying">Đang thử: <b>'+esc(tx.n)+'</b></div>':'<div class="note" style="margin:0">Bấm vào món đồ để mặc thử. Thích thì đổi!</div>')+act+
-  '<div class="phrow"><label class="btn phbtn">📷 '+(k.photo?'Đổi ảnh mặt':'Dùng ảnh mặt bé')+'<input type="file" accept="image/*" id="phIn" hidden></label>'+(k.photo?'<button class="btn phbtn" id="phTog">'+(k.photoOn?'🙂 Dùng mặt vẽ':'📷 Dùng ảnh')+'</button>':'')+'</div></div></div>'+
+ box.innerHTML='<div class="shophd"><div class="stage">'+avatarSVG(preview,150,{photo:kidFace(k,preview.kit)})+'</div><div style="flex:1;min-width:0"><div class="cn">🏆 '+coins(k)+'</div><div class="note" style="margin:0 0 6px">Đã sưu tầm '+nOwn+'/'+nAll+' món</div>'+(tx?'<div class="trying">Đang thử: <b>'+esc(tx.n)+'</b></div>':'<div class="note" style="margin:0">Bấm vào món đồ để mặc thử. Thích thì đổi!</div>')+act+
+  (fk?'<div class="phrow"><label class="btn phbtn" style="background:#FFF3BF;color:#E67700;box-shadow:0 3px 0 #FFE066">⚽ '+(faceOf(fk.id)?'Đổi':'Gắn')+' ảnh mặt '+esc(fk.n)+'<input type="file" accept="image/*" id="kfIn" hidden></label>'+(faceOf(fk.id)?'<button class="btn phbtn" id="kfDel">🗑️ Bỏ ảnh '+esc(fk.n)+'</button>':'')+'</div>'+(k.photoOn&&k.photo?'<div class="note" style="margin:4px 0 0;font-size:12px">Đang dùng mặt bé, bấm "Dùng mặt vẽ" để thấy mặt cầu thủ.</div>':''):'')+'<div class="phrow"><label class="btn phbtn">📷 '+(k.photo?'Đổi ảnh mặt':'Dùng ảnh mặt bé')+'<input type="file" accept="image/*" id="phIn" hidden></label>'+(k.photo?'<button class="btn phbtn" id="phTog">'+(k.photoOn?'🙂 Dùng mặt vẽ':'📷 Dùng ảnh')+'</button>':'')+'</div></div></div>'+
   '<div class="cats">'+CATS.map(c=>'<button class="btn cat'+(c[0]===shopCat?' on':'')+'" data-c="'+c[0]+'"><span>'+c[1]+'</span>'+c[2]+'</button>').join('')+'</div><div class="items"></div>';
  box.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{shopCat=b.dataset.c;renderShop();});
  const g=box.querySelector('.items');
@@ -1118,6 +1120,8 @@ function renderShop(){
   burst(innerWidth/2,180,30);toast('Bé đổi được '+x.n+'! 🎉');renderShop();};
  const wb=$('#wearBtn');if(wb)wb.onclick=()=>{Object.assign(k.wear,wearWith(k,tryId));tryId=null;save();hud();applyTheme();renderShop();};
  const tb=$('#tryOff');if(tb)tb.onclick=()=>{tryId=null;renderShop();};
+ const kf=$('#kfIn');if(kf)kf.onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;loadPhoto(f,d=>{DB.faces=DB.faces||{};DB.faces[fk.id]=d;try{save();}catch(x){toast('Máy hết chỗ lưu ảnh');}hud();renderShop();toast('Đã gắn ảnh mặt '+fk.n+'! ⚽');});};
+ const kd=$('#kfDel');if(kd)kd.onclick=()=>{delete DB.faces[fk.id];save();hud();renderShop();};
  $('#phIn').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;loadPhoto(f,d=>{k.photo=d;k.photoOn=true;try{save();}catch(x){}hud();renderShop();toast('Đã gắn ảnh mặt bé! 📷');});};
  const pt=$('#phTog');if(pt)pt.onclick=()=>{k.photoOn=!k.photoOn;save();hud();renderShop();};
 }
